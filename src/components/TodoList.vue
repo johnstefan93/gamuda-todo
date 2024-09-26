@@ -2,7 +2,7 @@
   <div class="todo-list">
     <div
       v-for="(todo, index) in todos"
-      :key="index"
+      :key="todo.id"
       class="todo-item"
       :class="{ 'completed-item': todo.completed }"
     >
@@ -12,7 +12,7 @@
           :color="ex4[index % ex4.length]"
           hide-details
         />
-        <p :class="{ 'completed-text': todo.completed }">{{ todo.text }}</p>
+        <p :class="{ 'completed-text': todo.completed }">{{ todo.title }}</p>
       </div>
       <div>
         <v-btn

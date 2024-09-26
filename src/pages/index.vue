@@ -11,7 +11,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, onMounted } from "vue";
+import { useTodoStore } from '@/composables/useTodoStore'; 
 import AppInput from "@/components/Input.vue";
 import TodoList from "@/components/TodoList.vue";
 
@@ -21,18 +22,11 @@ export default defineComponent({
     TodoList,
   },
   setup() {
-    const inputText = ref("");
-    const todos = ref<{ text: string; completed: boolean }[]>([]);
+    const { todos, fetchTodos, addTodo, inputText } = useTodoStore();
 
-    const addTodo = () => {
-      if (inputText.value.trim() !== "") {
-        todos.value.push({
-          text: inputText.value,
-          completed: false, // Add completed property
-        });
-        inputText.value = "";
-      }
-    };
+    onMounted(async () => {
+      await fetchTodos();
+    });
 
     return {
       inputText,
