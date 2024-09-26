@@ -19,10 +19,18 @@ export const useTodoStore = () => {
     }
   };
 
+  const editTodo = (updatedTodo: { id: number, userId: number, title: string, completed: boolean }) => {
+    const index = store.todos.findIndex(todo => todo.id === updatedTodo.id);
+    if (index !== -1) {
+      store.todos[index] = updatedTodo;
+    }
+  };
+
   return {
     todos,
     fetchTodos,
     addTodo,
     inputText,
+    editTodo
   };
 };

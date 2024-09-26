@@ -56,6 +56,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType, ref } from "vue";
+import { useTodoStore } from '@/composables/useTodoStore';
 import AppInput from "@/components/Input.vue";
 
 export default defineComponent({
@@ -65,39 +66,55 @@ export default defineComponent({
   },
   props: {
     todos: {
-      type: Array as PropType<{ text: string; completed: boolean }[]>,
+      type: Array as PropType<{ id: number; title: string; completed: boolean }[]>,
       required: true,
     },
   },
-  data() {
+  setup(props) {
+    const { editTodo } = useTodoStore();
+
+    const editedTodoIndex = ref(-1);
+    const editedTodoText = ref("");
+    const editDialogOpen = ref(false); // Use ref for editDialogOpen
+
+    const removeTodo = (index: number) => {
+      props.todos.splice(index, 1); 
+    };
+
+    const openEditDialog = (index: number) => {
+      editedTodoIndex.value = index;
+      editedTodoText.value = props.todos[index].title; 
+      editDialogOpen.value = true; // Update the ref directly
+    };
+
+    const closeEditDialog = () => {
+      editDialogOpen.value = false; // Update the ref directly
+      editedTodoIndex.value = -1;
+      editedTodoText.value = "";
+    };
+
+    const saveEditedTodo = () => {
+      if (editedTodoIndex.value !== -1) {
+        editTodo({
+          id: props.todos[editedTodoIndex.value].id,
+          title: editedTodoText.value,
+          completed: props.todos[editedTodoIndex.value].completed
+        });
+        closeEditDialog();
+      }
+    };
+
     return {
       ex4: ["success"],
-      editDialogOpen: false,
-      editedTodoIndex: -1,
-      editedTodoText: "",
+      editDialogOpen, // Expose the ref
+      editedTodoIndex,
+      editedTodoText,
+      removeTodo,
+      openEditDialog,
+      closeEditDialog,
+      saveEditedTodo,
     };
-  },
-  methods: {
-    removeTodo(index: number) {
-      this.todos.splice(index, 1);
-    },
-    openEditDialog(index: number) {
-      this.editedTodoIndex = index;
-      this.editedTodoText = this.todos[index].text;
-      this.editDialogOpen = true;
-    },
-    closeEditDialog() {
-      this.editDialogOpen = false;
-      this.editedTodoIndex = -1;
-      this.editedTodoText = "";
-    },
-    saveEditedTodo() {
-      if (this.editedTodoIndex !== -1) {
-        this.todos[this.editedTodoIndex].text = this.editedTodoText;
-        this.closeEditDialog();
-      }
-    },
-  },
+  }
 });
 </script>
 
